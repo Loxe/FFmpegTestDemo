@@ -33,7 +33,6 @@
 		2A344A1A1E84F4610054863F /* FFmpegTest.yuv in Resources */ = {isa = PBXBuildFile; fileRef = 2A344A191E84F4610054863F /* FFmpegTest.yuv */; };
 		2A7BAD901E976FC0005BB454 /* HWH264Encoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A7BAD8F1E976FC0005BB454 /* HWH264Encoder.m */; };
 		2A97448F1EA84BAA000D7B46 /* ConvertToMp4.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A97448E1EA84BAA000D7B46 /* ConvertToMp4.m */; };
-		2AE92C161EA72E38006AD436 /* libmp4v2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2AE92C151EA72E38006AD436 /* libmp4v2.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -167,21 +166,6 @@
 		2A9D29D91EAD93FB00423260 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		2A9D29DB1EAD940C00423260 /* libc++.1.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.1.tbd"; path = "usr/lib/libc++.1.tbd"; sourceTree = SDKROOT; };
 		2A9D29DD1EAD941B00423260 /* libc++abi.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++abi.tbd"; path = "usr/lib/libc++abi.tbd"; sourceTree = SDKROOT; };
-		2AE92C061EA72E38006AD436 /* chapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chapter.h; sourceTree = "<group>"; };
-		2AE92C071EA72E38006AD436 /* file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = file.h; sourceTree = "<group>"; };
-		2AE92C081EA72E38006AD436 /* file_prop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = file_prop.h; sourceTree = "<group>"; };
-		2AE92C091EA72E38006AD436 /* general.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = general.h; sourceTree = "<group>"; };
-		2AE92C0A1EA72E38006AD436 /* isma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = isma.h; sourceTree = "<group>"; };
-		2AE92C0B1EA72E38006AD436 /* itmf_generic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = itmf_generic.h; sourceTree = "<group>"; };
-		2AE92C0C1EA72E38006AD436 /* itmf_tags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = itmf_tags.h; sourceTree = "<group>"; };
-		2AE92C0D1EA72E38006AD436 /* mp4v2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mp4v2.h; sourceTree = "<group>"; };
-		2AE92C0E1EA72E38006AD436 /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
-		2AE92C0F1EA72E38006AD436 /* project.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = project.h; sourceTree = "<group>"; };
-		2AE92C101EA72E38006AD436 /* sample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sample.h; sourceTree = "<group>"; };
-		2AE92C111EA72E38006AD436 /* streaming.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = streaming.h; sourceTree = "<group>"; };
-		2AE92C121EA72E38006AD436 /* track.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = track.h; sourceTree = "<group>"; };
-		2AE92C131EA72E38006AD436 /* track_prop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = track_prop.h; sourceTree = "<group>"; };
-		2AE92C151EA72E38006AD436 /* libmp4v2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmp4v2.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -199,7 +183,6 @@
 				2A2286DA1E83C45B00338D54 /* libavcodec.a in Frameworks */,
 				2A2286DF1E83C45B00338D54 /* libswresample.a in Frameworks */,
 				2A2286DD1E83C45B00338D54 /* libavformat.a in Frameworks */,
-				2AE92C161EA72E38006AD436 /* libmp4v2.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,7 +222,6 @@
 				2A2286571E83C42900338D54 /* Assets.xcassets */,
 				2A2286591E83C42900338D54 /* LaunchScreen.storyboard */,
 				2A22865C1E83C42900338D54 /* Info.plist */,
-				2AE92C031EA72E38006AD436 /* Mp4v2-2.0.0 */,
 				2A2286621E83C45B00338D54 /* FFMpeg-arm64 */,
 				2A22864B1E83C42900338D54 /* Supporting Files */,
 			);
@@ -461,52 +443,6 @@
 				2A2286E91E83C46F00338D54 /* libz.tbd */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		2AE92C031EA72E38006AD436 /* Mp4v2-2.0.0 */ = {
-			isa = PBXGroup;
-			children = (
-				2AE92C041EA72E38006AD436 /* include */,
-				2AE92C141EA72E38006AD436 /* lib */,
-			);
-			path = "Mp4v2-2.0.0";
-			sourceTree = "<group>";
-		};
-		2AE92C041EA72E38006AD436 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				2AE92C051EA72E38006AD436 /* mp4v2 */,
-			);
-			path = include;
-			sourceTree = "<group>";
-		};
-		2AE92C051EA72E38006AD436 /* mp4v2 */ = {
-			isa = PBXGroup;
-			children = (
-				2AE92C061EA72E38006AD436 /* chapter.h */,
-				2AE92C071EA72E38006AD436 /* file.h */,
-				2AE92C081EA72E38006AD436 /* file_prop.h */,
-				2AE92C091EA72E38006AD436 /* general.h */,
-				2AE92C0A1EA72E38006AD436 /* isma.h */,
-				2AE92C0B1EA72E38006AD436 /* itmf_generic.h */,
-				2AE92C0C1EA72E38006AD436 /* itmf_tags.h */,
-				2AE92C0D1EA72E38006AD436 /* mp4v2.h */,
-				2AE92C0E1EA72E38006AD436 /* platform.h */,
-				2AE92C0F1EA72E38006AD436 /* project.h */,
-				2AE92C101EA72E38006AD436 /* sample.h */,
-				2AE92C111EA72E38006AD436 /* streaming.h */,
-				2AE92C121EA72E38006AD436 /* track.h */,
-				2AE92C131EA72E38006AD436 /* track_prop.h */,
-			);
-			path = mp4v2;
-			sourceTree = "<group>";
-		};
-		2AE92C141EA72E38006AD436 /* lib */ = {
-			isa = PBXGroup;
-			children = (
-				2AE92C151EA72E38006AD436 /* libmp4v2.a */,
-			);
-			path = lib;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
