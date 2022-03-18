@@ -15,6 +15,8 @@
     int frameID;
     VTCompressionSessionRef encodingSession;
     NSFileHandle *fileHnadle;
+    NSData *_sps;
+    NSData *_pps;
 }
 @property (nonatomic, strong) dispatch_queue_t encodeQueue;
 @property (nonatomic, strong) AVAssetWriterInput *videoInput;
@@ -23,7 +25,9 @@
 
 @end
 
-@implementation HWH264Encoder
+@implementation HWH264Encoder {
+
+}
 
 + (instancetype)sharedInstance {
     static HWH264Encoder *encoder = nil;
@@ -46,8 +50,7 @@ void didCompressH264(void * CM_NULLABLE outputCallbackRefCon, void * CM_NULLABLE
     }
     HWH264Encoder *encoder = (__bridge HWH264Encoder *)outputCallbackRefCon;
     
-    CFDictionaryRef infoRef = CFArrayGetValueAtIndex(CMSampleBufferGetSampleAttachmentsArray(sampleBuffer, true), 0);
-    bool keyFrame = !CFDictionaryContainsKey(infoRef, kCMSampleAttachmentKey_NotSync);
+    bool keyFrame = !CFDictionaryContainsKey( (CFDictionaryRef)(CFArrayGetValueAtIndex(CMSampleBufferGetSampleAttachmentsArray(sampleBuffer, true), 0)), (const void *)kCMSampleAttachmentKey_NotSync);
     // 判断当前帧是否为关键帧
     if (keyFrame) {
         CMFormatDescriptionRef format = CMSampleBufferGetFormatDescription(sampleBuffer);
@@ -61,22 +64,24 @@ void didCompressH264(void * CM_NULLABLE outputCallbackRefCon, void * CM_NULLABLE
             if (status == noErr) {
                 NSData *sps = [NSData dataWithBytes:sparameterPointer length:sparameterLength];
                 NSData *pps = [NSData dataWithBytes:pparameterPointer length:pparameterLength];
-                if (encoder) {
+                if (encoder && encoder->_sps == nil && encoder->_pps == nil) {
+                    encoder->_sps = sps;
+                    encoder->_pps = pps;
                     // 保存sps和pps数据
                     [encoder gotPpsSps:pps sps:sps];
                 }
             }
             
             //
-            CMFormatDescriptionRef description = CMSampleBufferGetFormatDescription(sampleBuffer);
-            CFDictionaryRef extensions = CMFormatDescriptionGetExtensions(description);
-            NSDictionary *extensionsDic = (__bridge NSDictionary*)extensions;
-            NSData *extraDataOC = [[extensionsDic objectForKey:@"SampleDescriptionExtensionAtoms"] objectForKey:@"avcC"];
+//            CMFormatDescriptionRef description = CMSampleBufferGetFormatDescription(sampleBuffer);
+//            CFDictionaryRef extensions = CMFormatDescriptionGetExtensions(description);
+//            NSDictionary *extensionsDic = (__bridge NSDictionary*)extensions;
+//            NSData *extraDataOC = [[extensionsDic objectForKey:@"SampleDescriptionExtensionAtoms"] objectForKey:@"avcC"];
 //            int extradataSize = (int)extraDataOC.length;
 //            void *extradata = (void*)extraDataOC.bytes;
-            if (extraDataOC!=nil) {
-                encoder.h264ExtraDataComplete(extraDataOC);
-            }
+//            if (extraDataOC!=nil) {
+//                encoder.h264ExtraDataComplete(extraDataOC);
+//            }
         }
     }
     
@@ -114,6 +119,13 @@ void didCompressH264(void * CM_NULLABLE outputCallbackRefCon, void * CM_NULLABLE
         [fileHnadle writeData:sps];
         [fileHnadle writeData:header];
         [fileHnadle writeData:pps];
+        NSMutableData *spsData = [NSMutableData new];
+        NSMutableData *ppsData = [NSMutableData new];
+        [spsData appendData:header];
+        [spsData appendData:sps];
+        [ppsData appendData:header];
+        [ppsData appendData:pps];
+        _h264ExtraDataComplete(spsData, ppsData);
     }
 }
 
@@ -125,7 +137,7 @@ void didCompressH264(void * CM_NULLABLE outputCallbackRefCon, void * CM_NULLABLE
         [fileHnadle writeData:header];
         [fileHnadle writeData:data];
         NSMutableData *data_ = [NSMutableData new];
-//        [data_ appendData:header];
+        [data_ appendData:header];
         [data_ appendData:data];
         _h264ConversionComplete(data_);
     }
@@ -219,28 +231,5 @@ void didCompressH264(void * CM_NULLABLE outputCallbackRefCon, void * CM_NULLABLE
     }
     return _videoInput;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 @end
