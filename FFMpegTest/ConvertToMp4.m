@@ -26,6 +26,11 @@ int BITRATE=16*1000;
     NSString *filePath;
 }
 @end
+#define H264_NALU_TYPE_NON_IDR_PICTURE                                  1
+#define H264_NALU_TYPE_IDR_PICTURE                                      5
+#define H264_NALU_TYPE_SEQUENCE_PARAMETER_SET                           7
+#define H264_NALU_TYPE_PICTURE_PARAMETER_SET                            8
+#define H264_NALU_TYPE_SEI                                              6
 @implementation ConvertToMp4
 -(id)init
 {
@@ -44,13 +49,49 @@ int BITRATE=16*1000;
 //保存帧数据
 -(void)procWithData:(NSData *)data
 {
+    
     int ret;
     AVPacket avPacket;
     av_init_packet(&avPacket);
-    avPacket.data = (uint8_t *)[data bytes];
+    uint8_t *dataBytes = (uint8_t *)data.bytes;
+    int dataBytesSize = data.length;
+    int nalu_type = (dataBytes[4] & 0x1F);
+    if (nalu_type == H264_NALU_TYPE_SEQUENCE_PARAMETER_SET) {
+    } else {
+        if (nalu_type == H264_NALU_TYPE_IDR_PICTURE || nalu_type == H264_NALU_TYPE_SEI) {
+            
+            if(dataBytes[0] == 0x00 && dataBytes[1] == 0x00 &&
+               dataBytes[2] == 0x00 && dataBytes[3] == 0x01){
+                dataBytesSize -= 4;
+                dataBytes[0] = ((dataBytesSize) >> 24) & 0x00ff;
+                dataBytes[1] = ((dataBytesSize) >> 16) & 0x00ff;
+                dataBytes[2] = ((dataBytesSize) >> 8) & 0x00ff;
+                dataBytes[3] = ((dataBytesSize)) & 0x00ff;
+            }
+            
+            avPacket.flags = AV_PKT_FLAG_KEY;
+            video_stream->codec->frame_number++;
+        } else {
+            if(dataBytes[0] == 0x00 && dataBytes[1] == 0x00 &&
+               dataBytes[2] == 0x00 && dataBytes[3] == 0x01){
+                dataBytesSize -= 4;
+                dataBytes[0] = ((dataBytesSize ) >> 24) & 0x00ff;
+                dataBytes[1] = ((dataBytesSize ) >> 16) & 0x00ff;
+                dataBytes[2] = ((dataBytesSize ) >> 8) & 0x00ff;
+                dataBytes[3] = ((dataBytesSize )) & 0x00ff;
+            }
+            
+            avPacket.flags = 0;
+                    video_stream->codec->frame_number++;
+        }
+        
+    }
+    
+    
+
+    avPacket.data = (uint8_t *)dataBytes;
     avPacket.size = (int)data.length;
     avPacket.pos = -1;
-    ret = av_interleaved_write_frame(outfmt_ctx, &avPacket);//写入（Write）
     if (ret < 0)
     {
         NSLog(@ "Error muxing packet\n");
@@ -63,13 +104,39 @@ int BITRATE=16*1000;
     av_free_packet(&avPacket);
 }
 
-- (void)procWithExtraData:(NSData *)extraData {
-    int extradataSize = (int)extraData.length;
-    void *extradata = (void*)extraData.bytes;
-    AVCodecContext* video_codec_ctx_ = video_stream->codec;
-    video_codec_ctx_->extradata = (uint8_t*)malloc(extraData.length);
-    memset(video_codec_ctx_->extradata, 0, extraData.length);
-    memcpy(video_codec_ctx_->extradata, extradata, extraData.length);
+- (void)procWithExtraData:(NSData *)spsData ppsData:(NSData *)ppsData {
+    uint8_t* spsFrame = (uint8_t *)spsData.bytes;
+    uint8_t* ppsFrame = (uint8_t *)ppsData.bytes;
+    
+    int spsFrameLen = spsData.length;
+    int ppsFrameLen = ppsData.length;
+    AVCodecContext *c = video_stream->codec;
+    int extradata_len = 8 + spsFrameLen - 4 + 1 + 2 + ppsFrameLen - 4;
+    c->extradata = (uint8_t*) av_mallocz(extradata_len);
+    c->extradata_size = extradata_len;
+    c->extradata[0] = 0x01;
+    c->extradata[1] = spsFrame[4 + 1];
+    c->extradata[2] = spsFrame[4 + 2];
+    c->extradata[3] = spsFrame[4 + 3];
+    c->extradata[4] = 0xFC | 3;
+    c->extradata[5] = 0xE0 | 1;
+    int tmp = spsFrameLen - 4;
+    c->extradata[6] = (tmp >> 8) & 0x00ff;
+    c->extradata[7] = tmp & 0x00ff;
+    int i = 0;
+    for (i = 0; i < tmp; i++)
+        c->extradata[8 + i] = spsFrame[4 + i];
+    c->extradata[8 + tmp] = 0x01;
+    int tmp2 = ppsFrameLen - 4;
+    c->extradata[8 + tmp + 1] = (tmp2 >> 8) & 0x00ff;
+    c->extradata[8 + tmp + 2] = tmp2 & 0x00ff;
+    for (i = 0; i < tmp2; i++)
+        c->extradata[8 + tmp + 3 + i] = ppsFrame[4 + i];
+    AVDictionary* opts = NULL;
+    
+    av_dict_set(&opts, "movflags", "frag_keyframe+empty_moov+faststart", 0);
+    int ret = avformat_write_header(outfmt_ctx, &opts);
+
 }
 
 //写入头信息
@@ -112,7 +179,7 @@ int BITRATE=16*1000;
     out_stream->codec->gop_size = FPS;
     out_stream->codec->bit_rate = BITRATE;
     out_stream->codec->codec_tag = 0;
-    if (outfmt_ctx->oformat->flags & AVFMT_GLOBALHEADER)
+    if (outFormat->flags & AVFMT_GLOBALHEADER)
     {
         out_stream->codec->flags |= CODEC_FLAG_GLOBAL_HEADER;
     }
@@ -129,8 +196,11 @@ int BITRATE=16*1000;
             NSLog(@ "Could not open output file '%s'", out_filename);
         }
     }
-    //写文件头（Write file header）
-    ret = avformat_write_header(outfmt_ctx, NULL);
+//    AVDictionary* opts = NULL;
+//
+//    av_dict_set(&opts, "movflags", "frag_keyframe+empty_moov+faststart", 0);
+//    //写文件头（Write file header）
+//    ret = avformat_write_header(outfmt_ctx, &opts);
     if (ret < 0)
     {
         NSLog(@ "Error occurred when opening output file\n");
