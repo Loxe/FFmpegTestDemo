@@ -42,8 +42,8 @@
     [HWH264Encoder sharedInstance].h264ConversionComplete = ^(NSData *data) {
         [weakself.Mp4Writer procWithData:data];
     };
-    [HWH264Encoder sharedInstance].h264ExtraDataComplete = ^(NSData *extraData) {
-        [weakself.Mp4Writer procWithExtraData:extraData];
+    [HWH264Encoder sharedInstance].h264ExtraDataComplete = ^(NSData *spsData,NSData *ppsData) {
+        [weakself.Mp4Writer procWithExtraData:spsData ppsData:ppsData];
     };
 }
 
