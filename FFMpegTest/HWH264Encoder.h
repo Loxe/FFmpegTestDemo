@@ -12,7 +12,7 @@
 @interface HWH264Encoder : NSObject
 
 @property (nonatomic, copy) void (^h264ConversionComplete)(NSData *data);
-@property (nonatomic, copy) void (^h264ExtraDataComplete)(NSData *extraData);
+@property (nonatomic, copy) void (^h264ExtraDataComplete)(NSData *spsData, NSData *ppsData);
 
 + (instancetype)sharedInstance;
 
